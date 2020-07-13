@@ -144,7 +144,9 @@ public class KoiduIntegrationTest {
                 Arguments.of(List.of(TWO_SPADE, THREE_HEART, JACK_SPADE, KING_HEART, QUEEN_SPADE),
                         List.of(KING_HEART), HIGH_CARD),
                 Arguments.of(List.of(JACK_SPADE, THREE_SPADE, FIVE_SPADE, QUEEN_CLUB, FOUR_SPADE),
-                        List.of(QUEEN_CLUB), HIGH_CARD)
+                        List.of(QUEEN_CLUB), HIGH_CARD),
+                Arguments.of(List.of(KING_DIAMOND, THREE_SPADE, FOUR_SPADE, TWO_DIAMOND, ACE_CLUB),
+                        List.of(ACE_CLUB), HIGH_CARD)
         );
     }
 }

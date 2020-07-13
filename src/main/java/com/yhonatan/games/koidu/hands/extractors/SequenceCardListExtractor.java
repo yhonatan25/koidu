@@ -34,7 +34,8 @@ public class SequenceCardListExtractor implements CardListExtractor {
         Optional<Card> optionalMax = cardList.stream()
                 .max(comparingInt(keyExtractor));
 
-        return optionalMax.map(c -> keyExtractor.applyAsInt(c) - keyExtractor.applyAsInt(optionalMin.get()))
+        return optionalMin.filter(c -> keyExtractor.applyAsInt(c) > 0)
+                .map(c -> keyExtractor.applyAsInt(optionalMax.get()) - keyExtractor.applyAsInt(c))
                 .map(i -> i == 4)
                 .orElse(false);
     }
