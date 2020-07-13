@@ -6,8 +6,10 @@ import com.yhonatan.games.koidu.hands.HandCategory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.yhonatan.games.koidu.cards.Card.ACE_CLUB;
@@ -46,15 +48,17 @@ import static com.yhonatan.games.koidu.hands.HandCategory.STRAIGHT;
 import static com.yhonatan.games.koidu.hands.HandCategory.STRAIGHT_FLUSH;
 import static com.yhonatan.games.koidu.hands.HandCategory.THREE_KIND;
 import static com.yhonatan.games.koidu.hands.HandCategory.TWO_PAIRS;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class KoiduIntegrationTest {
 
     private static final Koidu KOIDU = Koidu.getInstance();
 
     @ParameterizedTest
-    @MethodSource("getTestArguments")
+    @MethodSource("getHandTestArguments")
     void testGetHand(final List<Card> cardList, final List<Card> handCardList, final HandCategory handCategory) {
         final Hand hand = KOIDU.getHand(cardList);
 
@@ -62,7 +66,29 @@ public class KoiduIntegrationTest {
         assertThat(hand.getCardList(), is(handCardList));
     }
 
-    private static Stream<Arguments> getTestArguments() {
+    @ParameterizedTest
+    @MethodSource("getCardListTestArguments")
+    void testGetCardList(final int size) {
+        final List<Card> cardList = KOIDU.getCardList(size);
+        final List<Card> distinctCardList = cardList.stream().distinct().collect(toList());
+
+        assertThat(cardList.size(), is(size));
+        assertThat(distinctCardList.size(), is(size));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0, 53, 54})
+    void testGetCardListThrowsIllegalArgumentException(final int size) {
+        final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> KOIDU.getCardList(size));
+        assertThat(illegalArgumentException.getMessage(), is("Closed range for size is: [1,52]"));
+    }
+
+    private static Stream<Arguments> getCardListTestArguments() {
+        return IntStream.rangeClosed(1, 52)
+                .mapToObj(Arguments::of);
+    }
+
+    private static Stream<Arguments> getHandTestArguments() {
         return Stream.of(
                 //Straight Flush
                 Arguments.of(List.of(TEN_SPADE, JACK_SPADE, QUEEN_SPADE, KING_SPADE, ACE_SPADE),
